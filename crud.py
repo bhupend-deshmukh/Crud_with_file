@@ -1,76 +1,89 @@
-import json
+import json, os
 
-print("""
-1) Insert 
-2) Update 
-3) Delete
-    """)
-   
-option = input("enter any option :-----")
-if option == '1': 
-    with open('crud.json','r') as l:
-        re=json.load(l)
-        print(re)
-        contact=input('enter your contact :-----')
-        list1 = []
-        dict1={}
-        dict2={}
-        if list1 == re:
-            user_name = input('enter the name :---')
-            email = input("enter your email :--- ")
 
-            dict1['user name'] = user_name
-            dict1['email'] = email
-            dict2[contact] = dict1
-            re.append(dict2)
-            print("successfuly insert your detail !!!")
-                
-            with open('crud.json','w+') as k:
-                json.dump(re,k,indent=4)
-        else:
-            for j in re:
-                if contact in j:
-                    print('this account already exist')
-                    break
-                else:
-                    user_name = input('enter the name :---')
-                    email = input("enter your email :--- ")
+def insert(id):
+    all_data = []
+    data = {
+        "id" : id,
+        "name": input("enter name: "),
+        "age": int(input("enter age:")),
+        "gender":input("enter gneder:")
+    }
 
-                    dict1['user name'] = user_name
-                    dict1['email'] = email
-                    dict2[contact] = dict1
-                    re.append(dict2)
-                    print('successfuly insert your detail !!!')
-                    with open('crud.json','w+') as k:
-                        json.dump(re,k,indent=4)
-                    break
-elif option == '2':
-    contact=input('enter the contact:---')
-    with open('crud.json','r') as l:
-        re=json.load(l)
-        for j in re:
-            if contact in j:
-                for y in j.values():
-                    store = y
-                    new_user = input("Enter your new user :- ")
-                    new_email = input("Enter your new email :- ")
-                    store["user name"]=new_user
-                    store["email"]=new_email
-                    print('successfuly update your detail !!!')
-                    break
-        
-    with open ("crud.json","w") as m:
-        json.dump(re,m,indent=4)
-else:
-    contact=input('enter the contact:---')
-    with open('crud.json','r') as l:
-        re=json.load(l) 
-        for j in re:
-            if contact in j:
-                ml=j
-                re.remove(ml)
-                print('seccessfuly delete your account !!!')
-                break
-    with open('crud.json','w') as n:
-        json.dump(re,n,indent=4)
+    if os.path.exists("crud.json"):
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+            for stored_data in all_data:
+                if stored_data['id'] == data['id']:
+                    print("User already exists with this id!")
+                    return
+
+    all_data.append(data)
+    with open("crud.json", "w") as f:
+        json.dump(all_data, f, indent=4)
+    print("data inserted successfully!")
+ 
+
+def read():
+    if os.path.exists("crud.json"):        
+        with open("crud.json", "r") as f:
+            all_data = f.read()
+            if all_data != "":
+                print(all_data)
+                return
+    print("database is empty")
+
+def update(id):
+    if os.path.exists("crud.json"):
+            
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+
+            for data_to_update in all_data:
+                if data_to_update['id'] == id:
+                    
+                    data_to_update["name"] = input("update name: ")
+                    data_to_update["age"] = int(input("update age: "))
+                    data_to_update["gender"] = input("update gender: ")
+                    
+                    with open("crud.json", 'w') as f:
+                        json.dump(all_data, f, indent=4)
+                    return
+            else:
+                print("invalid input id")
+    else:
+        print("database is empty. Insert something first.")
+
+def delete(id):
+    if os.path.exists("crud.json"):
+            
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+
+            for data_to_delete in all_data:
+                if data_to_delete['id'] == id:
+                    all_data.remove(data_to_delete)
+                    with open('crud.json', "w") as f:
+                        json.dump(all_data, f, indent=4)
+                        print("data deleted successfully!")
+                    return
+            else:
+                print("invalid input id")
+    else:
+        print("database is empty. Insert something first.")
+
+
+choice = int(input("choose: "))
+
+if choice == 1:
+    with open("crud.json", "r") as f:
+        all_data = json.load(f)
+        maxId = 0
+        for data in all_data:
+            if data["id"] > maxId:
+                maxId = data['id']
+        insert(maxId+1)
+if choice==2:
+    id = int(input("Enter your id: "))
+    update(id)
 
