@@ -1,22 +1,16 @@
 import json, os
 
-
 def insert(id):
     all_data = []
     data = {
         "id" : id,
-        "name": input("enter name: "),
-        "age": int(input("enter age:")),
-        "gender":input("enter gneder:")
+        "username": input("enter username: "),
+        "surname": input("enter surname:"),
+        "password": input("enter password:")
     }
 
-    if os.path.exists("crud.json"):
-        with open("crud.json", "r") as f:
-            all_data = json.load(f)
-            for stored_data in all_data:
-                if stored_data['id'] == data['id']:
-                    print("User already exists with this id!")
-                    return
+    with open("crud.json", "r") as f:
+        all_data = json.load(f)
 
     all_data.append(data)
     with open("crud.json", "w") as f:
@@ -24,7 +18,7 @@ def insert(id):
     print("data inserted successfully!")
  
 
-def read():
+def read_by_Id():
     if os.path.exists("crud.json"):        
         with open("crud.json", "r") as f:
             all_data = f.read()
@@ -33,7 +27,8 @@ def read():
                 return
     print("database is empty")
 
-def update(id):
+
+def update_by_Id(id):
     if os.path.exists("crud.json"):
             
         with open("crud.json", "r") as f:
@@ -42,9 +37,9 @@ def update(id):
             for data_to_update in all_data:
                 if data_to_update['id'] == id:
                     
-                    data_to_update["name"] = input("update name: ")
-                    data_to_update["age"] = int(input("update age: "))
-                    data_to_update["gender"] = input("update gender: ")
+                    data_to_update["username"] = input("update username: ")
+                    data_to_update["surname"] = input("update surname: ")
+                    data_to_update["password"] = input("update password: ")
                     
                     with open("crud.json", 'w') as f:
                         json.dump(all_data, f, indent=4)
@@ -54,7 +49,8 @@ def update(id):
     else:
         print("database is empty. Insert something first.")
 
-def delete(id):
+
+def delete_by_Id(id):
     if os.path.exists("crud.json"):
             
         with open("crud.json", "r") as f:
@@ -72,18 +68,29 @@ def delete(id):
     else:
         print("database is empty. Insert something first.")
 
-
-choice = int(input("choose: "))
+print("1) Insert \n2) Update_By_ID\n3) Read\n4) Delete_By_ID")
+choice = int(input("choose any one:-  "))
 
 if choice == 1:
-    with open("crud.json", "r") as f:
-        all_data = json.load(f)
-        maxId = 0
-        for data in all_data:
-            if data["id"] > maxId:
-                maxId = data['id']
-        insert(maxId+1)
-if choice==2:
-    id = int(input("Enter your id: "))
-    update(id)
+    if os.path.exists("crud.json"):
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+            maxId = len(all_data)+1
+    else:
+        with open("crud.json","w") as f:
+            f.write('[]')
+            maxId = 1
+    insert(maxId)
 
+elif choice==2:
+    id = int(input("Enter your id: "))
+    update_by_Id(id)
+
+elif choice == 3:
+    read_by_Id()
+
+elif choice == 4:
+    Id = int(input("Enter your id:-"))
+    delete_by_Id(Id)
+else:
+    print("invalid input:-") 
